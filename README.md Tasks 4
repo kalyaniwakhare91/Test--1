@@ -1,0 +1,349 @@
+# Test--4
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spotify Clone</title>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --sidebar-color: #000;
+      --card-color: #181818;
+      --highlight-color: #1db954;
+      --text-color: #fff;
+      --subtext-color: #b3b3b3;
+    }
+
+    body.light {
+      --bg-color: #f5f5f5;
+      --sidebar-color: #fff;
+      --card-color: #eaeaea;
+      --text-color: #000;
+      --subtext-color: #444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: var(--sidebar-color);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      transition: background 0.3s;
+    }
+
+    .sidebar h1 {
+      color: var(--highlight-color);
+      font-size: 22px;
+      margin-bottom: 30px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .nav a {
+      color: var(--subtext-color);
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.3s;
+    }
+
+    .nav a:hover {
+      color: var(--text-color);
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .search-bar {
+      width: 100%;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-bar input {
+      width: 80%;
+      padding: 10px 15px;
+      border-radius: 25px;
+      border: none;
+      outline: none;
+      background: #282828;
+      color: var(--text-color);
+    }
+
+    body.light .search-bar input {
+      background: #ddd;
+    }
+
+    .toggle-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background: var(--highlight-color);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* Albums */
+    .albums {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-color);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      cursor: grab;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .card:active {
+      cursor: grabbing;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      background: #282828;
+    }
+
+    body.light .card:hover {
+      background: #d6d6d6;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .card h3 {
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: var(--subtext-color);
+    }
+
+    /* Drag highlight */
+    .drag-over {
+      outline: 2px dashed var(--highlight-color);
+    }
+
+    /* Player */
+    .player {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: #181818;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      transition: background 0.3s;
+    }
+
+    body.light .player {
+      background: #ccc;
+    }
+
+    .controls {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .controls button {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      color: var(--highlight-color);
+    }
+
+    .volume {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .volume input {
+      width: 100px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+      .main {
+        padding: 15px;
+      }
+      .albums {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h1>Spotify</h1>
+    <div class="nav">
+      <a href="#">🏠 Home</a>
+      <a href="#">🔍 Search</a>
+      <a href="#">📂 Your Library</a>
+      <a href="#">➕ Create Playlist</a>
+      <a href="#">❤️ Liked Songs</a>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search for songs, artists..." />
+      <button class="toggle-btn" onclick="toggleMode()">🌙</button>
+    </div>
+
+    <h2>Featured Albums</h2>
+    <div class="albums" id="albumsContainer"></div>
+  </div>
+
+  <!-- Player -->
+  <div class="player">
+    <div class="controls">
+      <button>⏮️</button>
+      <button>⏯️</button>
+      <button>⏭️</button>
+    </div>
+    <div class="volume">
+      🔊 <input type="range" min="0" max="100">
+    </div>
+  </div>
+
+  <script>
+    // Dark/Light Toggle
+    function toggleMode() {
+      document.body.classList.toggle("light");
+    }
+
+    // Playlist Data
+    let albumsData = [
+      { title: "Chill Hits", artist: "Various Artists", img: "https://placehold.co/200x200?text=Chill" },
+      { title: "Top 50", artist: "Global", img: "https://placehold.co/200x200?text=Top+50" },
+      { title: "Workout Mix", artist: "DJ Energy", img: "https://placehold.co/200x200?text=Workout" },
+      { title: "Acoustic Vibes", artist: "Guitar Hero", img: "https://placehold.co/200x200?text=Acoustic" },
+      { title: "Party Anthems", artist: "Club Mix", img: "https://placehold.co/200x200?text=Party" },
+      { title: "Lo-Fi Beats", artist: "LoFi Chill", img: "https://placehold.co/200x200?text=Lo-Fi" }
+    ];
+
+    const albumsContainer = document.getElementById("albumsContainer");
+
+    // Render Albums
+    function renderAlbums(list) {
+      albumsContainer.innerHTML = "";
+      list.forEach((album, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.setAttribute("draggable", true);
+        card.dataset.index = index;
+
+        card.innerHTML = `
+          <img src="${album.img}" alt="${album.title}">
+          <h3>${album.title}</h3>
+          <p>${album.artist}</p>
+        `;
+
+        // Drag Events
+        card.addEventListener("dragstart", dragStart);
+        card.addEventListener("dragover", dragOver);
+        card.addEventListener("drop", drop);
+        card.addEventListener("dragend", dragEnd);
+
+        albumsContainer.appendChild(card);
+      });
+    }
+
+    // Drag & Drop Functions
+    let draggedIndex = null;
+
+    function dragStart(e) {
+      draggedIndex = +this.dataset.index;
+      e.dataTransfer.effectAllowed = "move";
+    }
+
+    function dragOver(e) {
+      e.preventDefault();
+      this.classList.add("drag-over");
+    }
+
+    function drop(e) {
+      e.preventDefault();
+      const targetIndex = +this.dataset.index;
+
+      if (draggedIndex !== null && draggedIndex !== targetIndex) {
+        const draggedItem = albumsData[draggedIndex];
+        albumsData.splice(draggedIndex, 1);
+        albumsData.splice(targetIndex, 0, draggedItem);
+        renderAlbums(albumsData);
+      }
+    }
+
+    function dragEnd() {
+      this.classList.remove("drag-over");
+    }
+
+    // Search Filter
+    document.getElementById("searchInput").addEventListener("input", e => {
+      const query = e.target.value.toLowerCase();
+      const filtered = albumsData.filter(album =>
+        album.title.toLowerCase().includes(query) ||
+        album.artist.toLowerCase().includes(query)
+      );
+      renderAlbums(filtered);
+    });
+
+    // Initial Render
+    renderAlbums(albumsData);
+  </script>
+</body>
+</html>
